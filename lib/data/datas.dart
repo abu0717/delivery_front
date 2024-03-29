@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 String fullUrl = '192.168.1.2:8000';
 
@@ -15,15 +16,52 @@ class Cart {
   void addToCart(item){
     var z = userCart.firstWhere((element) => element['id'] == item['id'], orElse: () => {});
     if (z.isNotEmpty) {
-      userCart[userCart.indexOf(item)]['quantity'] += 1;
+      z['quantity'] += 1;
     } else {
       userCart.add(item);
     }
-    print(userCart);
+    // print(userCart);
   }
 
   void removeFromCart(item){
+    var z = userCart.firstWhere((element) => element['id'] == item['id'], orElse: () => {});
+    if (z['quantity']-1 != 0) {
+      z['quantity'] -= 1;
+    } else {
+      userCart.remove(item);
+    }
+  }
+
+  void deleteItem(item) {
     userCart.remove(item);
+  }
+}
+
+class Auth {
+  makeAuth(username, password) async {
+    var url = Uri.http(fullUrl, '/auth/token/login/');
+    var data = {
+      "username": username,
+      "password": password,
+    };
+    Map<String, String> headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    String body = json.encode(data);
+    var response = await http.post(url, body: body, headers: headers);
+    final token = jsonDecode(response.body);
+    print(token);
+    if (!token.containsKey('non_field_errors')) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token['auth_token']);
+    }
+    return token;
+  }
+
+  static Future<String?> getRA() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
   }
 }
 

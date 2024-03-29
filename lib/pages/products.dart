@@ -1,7 +1,6 @@
 import 'package:evos/data/datas.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:evos/pages/product_ditail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -34,6 +33,10 @@ class _ProductsPageState extends State<ProductsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(
+              height: 15,
+            ),
+
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 21),
               child: Row(
@@ -187,7 +190,15 @@ class _ProductsPageState extends State<ProductsPage> {
                                           Expanded(
                                             child: Column(
                                               children: [
-                                                Image.network(domain + categories[index]['product'][i]['img']),
+                                                GestureDetector(
+                                                  onTap: () async {
+                                                    String pushing = await Navigator.push(context, MaterialPageRoute(builder: (builer) => ProductDitail(ditailData: categories[index]['product'][i],)));
+                                                    if (pushing == 'refreshing') {
+                                                      setState(() {});
+                                                    }
+                                                  },
+                                                  child: Image.network(domain + categories[index]['product'][i]['img'])
+                                                ),
                                                 Text(
                                                   categories[index]['product'][i]['product_name'],
                                                   textAlign: TextAlign.center,
@@ -206,9 +217,11 @@ class _ProductsPageState extends State<ProductsPage> {
                                             children: [
                                               GestureDetector(
                                                 onTap: () {
-                                                  var itemAdding = categories[index]['product'][i];
-                                                  itemAdding['quantity'] = 1; 
-                                                  Cart().addToCart(itemAdding);
+                                                  setState(() {
+                                                    var itemAdding = categories[index]['product'][i];
+                                                    itemAdding['quantity'] = 1; 
+                                                    Cart().addToCart(itemAdding);
+                                                  });
                                                 },
                                                 child: Container(
                                                   padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 30),
@@ -241,21 +254,24 @@ class _ProductsPageState extends State<ProductsPage> {
                                           ) else Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  var itemAdding = categories[index]['product'][i];
-                                                  itemAdding['quantity'] = 1; 
-                                                  Cart().addToCart(itemAdding);
-                                                },
-                                                child: Container(
-                                                  padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 30),
-                                                  decoration: const BoxDecoration(
-                                                    color: Color.fromARGB(255, 63, 156, 66),
-                                                    borderRadius: BorderRadius.only(topRight: Radius.circular(17), bottomLeft: Radius.circular(17))
-                                                  ),
-                                                  child: const Row(
-                                                    children: [
-                                                      Text(
+                                              Container(
+                                                width: 73,
+                                                padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                                                decoration: const BoxDecoration(
+                                                  color: Color.fromARGB(255, 63, 156, 66),
+                                                  borderRadius: BorderRadius.only(topRight: Radius.circular(17), bottomLeft: Radius.circular(17))
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          var itemAdding = categories[index]['product'][i];
+                                                          Cart().removeFromCart(itemAdding);
+                                                        });
+                                                      },
+                                                      child: const Text(
                                                         '-',
                                                         style: TextStyle(
                                                           color: Colors.white,
@@ -263,17 +279,25 @@ class _ProductsPageState extends State<ProductsPage> {
                                                           fontWeight: FontWeight.bold
                                                         ),
                                                       ),
+                                                    ),
 
-                                                      Text(
-                                                        '-',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 18,
-                                                          fontWeight: FontWeight.bold
-                                                        ),
+                                                    Text(
+                                                      Cart().getCart().firstWhere((element) => element['id'] == categories[index]['product'][i]['id'])['quantity'].toString(),
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.bold
                                                       ),
+                                                    ),
 
-                                                      Text(
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        setState(() {
+                                                          var itemAdding = categories[index]['product'][i];
+                                                          Cart().addToCart(itemAdding);
+                                                        });
+                                                      },
+                                                      child: const Text(
                                                         '+',
                                                         style: TextStyle(
                                                           color: Colors.white,
@@ -281,9 +305,9 @@ class _ProductsPageState extends State<ProductsPage> {
                                                           fontWeight: FontWeight.bold
                                                         ),
                                                       ),
-                                                    ],
-                                                  )
-                                                ),
+                                                    ),
+                                                  ],
+                                                )
                                               ),
 
                                               Container(
