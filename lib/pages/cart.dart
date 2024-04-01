@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:evos/data/datas.dart';
-import 'package:flutter/widgets.dart';
-import 'package:http/http.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -20,31 +17,63 @@ class _CartPageState extends State<CartPage> {
   @override
   Widget build(BuildContext context) {
 
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async { 
-        print('Back Button');
         Navigator.pop(context, 'refr');
         return true;
       },
       child: Scaffold(
         appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
           leading: GestureDetector(
             onTap: () {
               Navigator.pop(context, 'refr');
             },
-            child: Icon(Icons.arrow_back_ios)
+            child: const Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Icon(
+                Icons.arrow_back_ios,
+                size: 23,
+              ),
+            ),
           ),
-          title: Text('Cart'),
+          title: const Text('Корзина', style: TextStyle(fontFamily: 'Nunito'),),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  Cart().clearCart();
+                  Navigator.pop(context, 'refr');
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: const BorderRadius.all(Radius.circular(5))
+                ),
+                child: const Icon(
+                  Icons.close,
+                  size: 23,
+                ),
+              ),
+            )
+          ],
         ),
       
         body: SafeArea(
-          child: Container(
+          child: cartItems.isNotEmpty ? Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 15
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(
+                  height: 10,
+                ),
                 Expanded(
                   child: ListView.builder(
                     scrollDirection: Axis.vertical,
@@ -174,19 +203,156 @@ class _CartPageState extends State<CartPage> {
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 15,
+                          const SizedBox(
+                            height: 10,
                           )
                         ],
                       );
                     },
                   ),
                 ),
-                Container(
-                  child: const Text('Hola'),
+                Column(
+                  children: [
+                    const SizedBox(
+                      height: 22,
+                    ),
+                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Ваш заказ: ',
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w600
+                          ),
+                        ),
+
+                        Text(
+                          Cart().countTotalPrice().toString(),
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color.fromARGB(255, 60, 139, 63)
+                          ),
+                        )
+                      ],
+                    ),
+
+                    const SizedBox(
+                      height: 23,
+                    ),
+
+                    GestureDetector(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: Color.fromARGB(255, 79, 150, 82),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: Colors.green,
+                              blurRadius: 10,
+                              offset: Offset(0, 8)
+                            )
+                          ]
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Оформить заказ',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16
+                              ),
+                            ),
+
+                            Icon(
+                              Icons.shopping_bag,
+                              color: Colors.white,
+                            ),
+                            
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(
+                      height: 15,
+                    )
+                  ],
                 )
               ],
             )
+          ) : Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Ой, пусто!',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      color: Color.fromARGB(255, 79, 156, 84),
+                      fontSize: 24
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 7,
+                  ),
+
+                  const Text(
+                    'Ваша корзина пока пуста. Добавьте любимиое блюдо из меню',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontFamily: 'Nunito'
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 15,
+                  ),
+
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, 'refr');
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 79, 150, 82),
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.green,
+                            blurRadius: 10,
+                            offset: Offset(0, 8)
+                          )
+                        ]
+                      ),
+                      
+                      child: const Text(
+                        'Перейти в меню',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Nunito'
+                        ),
+                      )
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

@@ -77,7 +77,7 @@ class _UserLoginState extends State<UserLogin> {
               error.isNotEmpty ?
                Text(
                 error,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.red
                 ),
               ) : const SizedBox(),

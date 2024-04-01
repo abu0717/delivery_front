@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -35,6 +36,19 @@ class Cart {
   void deleteItem(item) {
     userCart.remove(item);
   }
+
+  void clearCart() {
+    userCart.clear();
+  }
+
+  String countTotalPrice() {
+    int totalPrice = 0;
+    for (Map<String, dynamic> item in userCart) {
+      int i = item["product_price"] * item["quantity"];
+      totalPrice += i;
+    }
+    return totalPrice.toString();
+  }
 }
 
 class Auth {
@@ -51,7 +65,6 @@ class Auth {
     String body = json.encode(data);
     var response = await http.post(url, body: body, headers: headers);
     final token = jsonDecode(response.body);
-    print(token);
     if (!token.containsKey('non_field_errors')) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token['auth_token']);

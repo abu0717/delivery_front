@@ -26,7 +26,7 @@ class _ProductDitailState extends State<ProductDitail> {
           onTap: () {
             Navigator.pop(context, 'refreshing');
           },
-          child: Icon(Icons.arrow_back_ios),
+          child: const Icon(Icons.arrow_back_ios),
         ),
       ),
       body: SafeArea(
